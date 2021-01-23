@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Town;
+use App\Unit;
 use Illuminate\Http\Request;
 
 class TownController extends Controller
@@ -18,9 +19,9 @@ class TownController extends Controller
         if ($request->town == 'all') {
             return Town::all();
         } elseif ($request->state != null) {
-            return Town::with('state')->where('state_id', $request->state)->latest()->paginate(5);
+            return Town::with('state')->where('state_id', $request->state)->paginate(10);
         } else {
-            return Town::with('state')->latest()->paginate(5);
+            return Town::with('state')->paginate(10);
         }
     }
 
@@ -60,7 +61,7 @@ class TownController extends Controller
      */
     public function show(Town $town)
     {
-        //
+        return Unit::where('town_id', $town->id)->get()->keyBy('id');
     }
 
     /**

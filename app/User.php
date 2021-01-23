@@ -10,7 +10,6 @@ use Laratrust\Traits\LaratrustUserTrait;
 
 class User extends Authenticatable
 {
-    use LaratrustUserTrait;
     use Notifiable;
 
     /**
@@ -39,21 +38,5 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
-    public function books()
-    {
-        return $this->hasMany(Book::class);
-    }
-
-
-    public function zones()
-    {
-        return $this->belongsToMany(Zone::class, 'delegate_user_zone')->withPivot('delegate_id');
-    }
-
-    public function delegates()
-    {
-        return $this->belongsToMany(Delegate::class, 'delegate_user_zone')->withPivot('zone_id');
-    }
 
 }

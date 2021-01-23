@@ -4,19 +4,9 @@
         <div class="box box-primary">
             <div class="box-header">
                 <h3 class="box-title" style="display: inline-block">{{ title }}</h3>
-                <select v-model="state" @change="getTowns">
-                    <option value="">إختر الولايه........</option>
-                    <option v-for="(state, index) in states" :key="state.id" :value="state.id">{{ state.name }}</option>
-                </select>
-
-                <select v-model="town" @change="getUnits">
+                <select v-model="town" @change="loadData">
                     <option value="">إختر المحليه........</option>
                     <option v-for="(town, index) in towns" :key="town.id" :value="town.id">{{ town.name }}</option>
-                </select>
-
-                <select v-model="unit" @change="loadData">
-                    <option value="">إختر الوحده........</option>
-                    <option v-for="(unit, index) in units" :key="unit.id" :value="unit.id">{{ unit.name }}</option>
                 </select>
 
 
@@ -40,7 +30,7 @@
                     <tr v-for="(row, index) in rows.data" :key="row.id">
                         <td>{{ index + 1 }}</td>
                         <td>{{ row.name }}</td>
-                        <td>{{ row.unit.name }}</td>
+                        <td>{{ row.town.name }}</td>
                         <td>
                             <a href="#" :data-target="'#' + modalTitle" @click="editModal(row)"><i
                                 class="fa fa-edit blue"></i></a> / <a href="#" @click="deleteData(row.id)"><i
@@ -75,19 +65,17 @@
                         </div>
                         <div class="modal-body">
                             <div class="form-group">
-                                <input v-model="form.name" type="text" name="name" placeholder="إسم المنطقه"
+                                <input v-model="form.name" type="text" name="name" placeholder="إسم الوحده الإداريه"
                                        class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
                                 <has-error :form="form" field="name"></has-error>
                             </div>
 
                             <div class="form-group">
-                                <select name="unit_id" v-model="form.unit_id"
-                                        :class="{ 'is-invalid': form.errors.has('town_id') }"
+                                <select name="town_id" v-model="form.town_id" :class="{ 'is-invalid': form.errors.has('town_id') }"
                                         class="form-control">
-                                    <option value="">إختر الوحده ........</option>
-                                    <option v-for="(unit, index) in units" :key="unit.id" :value="unit.id">{{
-                                            unit.name
-                                        }}
+                                    <option value="">إختر المحليه ........</option>
+                                    <option v-for="(town, index) in towns" :key="town.id" :value="town.id">{{
+                                            town.name }}
                                     </option>
                                 </select>
                                 <has-error :form="form" field="town_id"></has-error>
@@ -113,35 +101,31 @@ export default {
     data() {
         return {
             editMode: false,
-            modalTitle: 'zones',
-            routeTitle: 'zone',
-            title: 'المناطق',
+            modalTitle: 'units',
+            routeTitle: 'unit',
+            title: 'الوحدات',
             subtitle: 'الوحده',
             rows: {},
-            states: {},
-            state: '',
             towns: {},
             town: '',
-            units: {},
-            unit: '',
             form: new Form({
                 id: '',
                 name: '',
-                unit_id: ''
+                town_id: ''
             })
         }
     },
-    props: ['id'],
+    props:['id'],
     methods: {
         getResults(page = 1) {
-            axios.get('api/' + this.routeTitle + '?unit=' + this.unit + '&page=' + page)
+            axios.get('api/'+ this.routeTitle + '?page=' + page)
                 .then(response => {
                     this.rows = response.data;
                 });
         },
         updateData() {
             this.$Progress.start();
-            this.form.put('api/' + this.routeTitle + '/' + this.form.id).then(() => {
+            this.form.put('api/'+ this.routeTitle + '/' + this.form.id).then(() => {
                 // Fire.$emit('afterCreate');
 
                 $("#" + this.modalTitle).modal('hide');
@@ -195,7 +179,11 @@ export default {
             });
         },
         loadData() {
-            axios.get('api/' + this.routeTitle + '?unit=' + this.unit).then(({data}) => (this.rows = data));
+            if (this.town == '') {
+                axios.get('api/' + this.routeTitle).then(({data}) => (this.rows = data));
+            } else {
+                axios.get('api/' + this.routeTitle + '?town=' + this.town).then(({data}) => (this.rows = data));
+            }
         },
         createData() {
             this.$Progress.start();
@@ -218,18 +206,13 @@ export default {
                         title: "لم يتم الحفظ "
                     });
                 });
-        },
-        getTowns() {
-            axios.get('api/state/' + this.state).then(({data}) => (this.towns = data));
-        },
-        getUnits() {
-            axios.get('api/town/' + this.town).then(({data}) => (this.units = data));
         }
     },
     created() {
 
-        axios.get('api/state?state=all').then(({data}) => (this.states = data));
+        axios.get('api/town?town=all').then(({data}) => (this.towns = data));
 
+        this.loadData();
 
     }
 }

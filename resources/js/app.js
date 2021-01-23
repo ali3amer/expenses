@@ -43,20 +43,12 @@ Vue.use(VueProgressBar, {
 });
 
 const routes = [
-    {path: '/crops', component: require('./components/Crops.vue').default},
-    {path: '/delegates', component: require('./components/Delegates.vue').default},
-    {path: '/offices', component: require('./components/Offices.vue').default},
     {path: '/states', component: require('./components/States.vue').default},
     {path: '/towns', component: require('./components/Towns.vue').default},
-    {path: '/towns', component: require('./components/Towns.vue').default},
+    {path: '/units', component: require('./components/Units.vue').default},
     {path: '/zones', component: require('./components/Zones.vue').default},
-    {path: '/books', component: require('./components/Book.vue').default},
-    {path: '/receipts', component: require('./components/Receipt.vue').default},
     {path: '/users', component: require('./components/Users.vue').default},
-    // { path: '/', component: require('./components/Master.vue').default,
-    // children: [
-    //     { path: 'users', component: require('./components/Users.vue').default }
-    // ] }
+    {path: '/clients', component: require('./components/Clients.vue').default},
 ];
 
 const router = new VueRouter({
@@ -75,7 +67,7 @@ const router = new VueRouter({
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

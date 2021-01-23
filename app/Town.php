@@ -13,8 +13,9 @@ class Town extends Model
         return $this->belongsTo(State::class);
     }
 
-    public function offices()
+    public function units()
     {
-        return $this->hasMany(Office::class);
+        return $this->hasMany(Unit::class);
     }
+
 }

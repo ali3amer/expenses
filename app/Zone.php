@@ -10,19 +10,10 @@ class Zone extends Model
 
 //    protected $hidden = ['pivot'];
 
-    public function office()
+    public function unit()
     {
-        return $this->belongsTo(Office::class);
+        return $this->belongsTo(Unit::class);
     }
 
-    public function delegates()
-    {
-        return $this->belongsToMany(Delegate::class, 'delegate_user_zone')->withPivot('user_id');
-    }
-
-    public function users()
-    {
-        return $this->belongsToMany(User::class, 'delegate_user_zone')->withPivot('delegate_id');
-    }
 
 }

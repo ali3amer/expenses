@@ -16,8 +16,8 @@ class CreateZonesTable extends Migration
         Schema::create('zones', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->integer('office_id')->unsigned();
-            $table->foreign('office_id')->references('id')->on('offices')->onDelete('cascade');
+            $table->integer('unit_id')->unsigned();
+            $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade');
             $table->timestamps();
         });
     }

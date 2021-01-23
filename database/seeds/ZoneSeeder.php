@@ -16,7 +16,7 @@ class ZoneSeeder extends Seeder
         foreach ($zones as $zone) {
             \App\Zone::create([
                 'name' => $zone,
-                'office_id' => 1
+                'town_id' => 1
             ]);
         }
     }

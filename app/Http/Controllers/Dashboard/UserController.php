@@ -21,7 +21,7 @@ class UserController extends Controller
         if ($request->user == 'all') {
             return User::all();
         } else {
-            return User::latest()->paginate(5);
+            return User::paginate(10);
         }
     }
 
@@ -32,7 +32,6 @@ class UserController extends Controller
      */
     public function create()
     {
-        return "ali";
 //        return view('dashboard.users.create');
     }
 

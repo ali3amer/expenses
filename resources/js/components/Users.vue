@@ -25,13 +25,13 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr v-for="(user, index) in users.data" :key="user.id">
+                    <tr v-for="(row, index) in rows.data" :key="row.id">
                         <td>{{ index + 1 }}</td>
-                        <td>{{ user.name }}</td>
-                        <td>{{ user.email }}</td>
+                        <td>{{ row.name }}</td>
+                        <td>{{ row.email }}</td>
                         <td>
-                            <a href="#" :data-target="'#' + modalTitle" @click="editModal(user)"><i
-                                class="fa fa-edit blue"></i></a> / <a href="#" @click="deleteUser(user.id)"><i
+                            <a href="#" :data-target="'#' + modalTitle" @click="editModal(row)"><i
+                                class="fa fa-edit blue"></i></a> / <a href="#" @click="deleteData(row.id)"><i
                             class="fa fa-trash red"></i></a>
                         </td>
                     </tr>
@@ -40,7 +40,7 @@
             </div>
             <!-- /.box-body -->
             <div class="box-footer">
-                <pagination :data="users" @pagination-change-page="getResults"></pagination>
+                <pagination :data="rows" @pagination-change-page="getResults"></pagination>
             </div>
         </div>
         <!-- /.box -->
@@ -62,19 +62,19 @@
                         </div>
                         <div class="modal-body">
                             <div class="form-group">
-                                <input v-model="form.name" type="text" name="name" placeholder="Name"
+                                <input v-model="form.name" type="text" name="name" placeholder="إسم المستخدم"
                                        class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
                                 <has-error :form="form" field="name"></has-error>
                             </div>
 
                             <div class="form-group">
-                                <input v-model="form.email" type="email" name="email" placeholder="Email"
+                                <input v-model="form.email" type="email" name="email" placeholder="البريد الإلكتروني"
                                        class="form-control" :class="{ 'is-invalid': form.errors.has('email') }">
                                 <has-error :form="form" field="email"></has-error>
                             </div>
 
                             <div class="form-group">
-                                <input v-model="form.password" type="password" name="password" placeholder="Password"
+                                <input v-model="form.password" type="password" name="password" placeholder="كلnمة السر"
                                        class="form-control" :class="{ 'is-invalid': form.errors.has('password') }">
                                 <has-error :form="form" field="password"></has-error>
                             </div>
@@ -99,9 +99,10 @@
             return {
                 editMode: false,
                 modalTitle: 'users',
+                routeTitle: 'user',
                 title: 'المستخدمين',
                 subtitle: 'مستخدم',
-                users: {},
+                rows: {},
                 form: new Form({
                     id: '',
                     name: '',
@@ -113,14 +114,14 @@
         props:['id'],
         methods: {
             getResults(page = 1) {
-                axios.get('api/user?page=' + page)
+                axios.get('api/'+ this.routeTitle + '?page=' + page)
                     .then(response => {
-                        this.users = response.data;
+                        this.rows = response.data;
                     });
             },
             updateData() {
                 this.$Progress.start();
-                this.form.put('api/user/' + this.form.id).then(() => {
+                this.form.put('api/'+ this.routeTitle + '/' + this.form.id).then(() => {
                     // Fire.$emit('afterCreate');
 
                     $("#" + this.modalTitle).modal('hide');
@@ -139,13 +140,12 @@
             newModal() {
                 this.editMode = false;
                 this.form.reset();
-                // $("#" + this.modalTitle).modal('show');
             },
-            editModal(user) {
+            editModal(row) {
                 this.editMode = true;
                 this.form.reset();
                 $("#" + this.modalTitle).modal('show');
-                this.form.fill(user);
+                this.form.fill(row);
             },
             deleteData(id) {
                 swal.fire({
@@ -159,7 +159,7 @@
                 }).then((result) => {
                     this.$Progress.start();
                     if (result.value) {
-                        this.form.delete('api/user/' + id).then(() => {
+                        this.form.delete('api/' + this.routeTitle + '/' + id).then(() => {
                             this.loadData();
                             this.$Progress.finish();
                             toast.fire({
@@ -175,15 +175,13 @@
                 });
             },
             loadData() {
-                // if(this.$gate.isAdminOrAuthor()) {
-                axios.get('api/user').then(({data}) => (this.users = data));
-                // }
+                axios.get('api/' + this.routeTitle).then(({data}) => (this.rows = data));
             },
             createData() {
                 this.$Progress.start();
                 $("#" + this.modalTitle).modal('hide');
                 this.form
-                    .post("api/user")
+                    .post("api/" + this.routeTitle)
                     .then(() => {
                         // Fire.$emit("afterCreate");
                         $("#" + this.modalTitle).modal("hide");
@@ -203,21 +201,9 @@
             }
         },
         created() {
-            // Fire.$on('searching', () => {
-            //     let query = this.$parent.search;
-            //     axios.get('api/findUser?q=' + query)
-            //         .then((data) => {
-            //             this.users = data.data;
-            //         })
-            //         .catch(() => {
-            //             swal.fire("Failed", "There Was Something Wrong.", "warning");
-            //         });
-            // });
+
             this.loadData();
-            // Fire.$on('afterCreate', () => {
-            //     this.loadData();
-            // });
-            //setInterval(() => this.loadData(), 3000);
+
         }
     }
 </script>

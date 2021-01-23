@@ -1,25 +1,20 @@
 <?php
 
-namespace App\Http\Controllers\Dashboard;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Crop;
+use App\Field;
 use Illuminate\Http\Request;
 
-class CropController extends Controller
+class FieldController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        if ($request->crop == 'all') {
-            return Crop::all();
-        } else {
-            return Crop::latest()->paginate(5);
-        }
+        //
     }
 
     /**
@@ -40,22 +35,16 @@ class CropController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'name'  =>  'required|unique:crops|string|max:191'
-        ]);
-
-        return Crop::create([
-            'name'  =>  $request['name'],
-        ]);
+        //
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Crop  $crop
+     * @param  \App\Field  $field
      * @return \Illuminate\Http\Response
      */
-    public function show(Crop $crop)
+    public function show(Field $field)
     {
         //
     }
@@ -63,10 +52,10 @@ class CropController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Crop  $crop
+     * @param  \App\Field  $field
      * @return \Illuminate\Http\Response
      */
-    public function edit(Crop $crop)
+    public function edit(Field $field)
     {
         //
     }
@@ -75,25 +64,22 @@ class CropController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Crop  $crop
+     * @param  \App\Field  $field
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Crop $crop)
+    public function update(Request $request, Field $field)
     {
-        $this->validate($request, [
-            'name'  =>  'required|string|max:191|unique:crops,name,'.$crop->id
-        ]);
-        $crop->update($request->all());
+        //
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Crop  $crop
+     * @param  \App\Field  $field
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Crop $crop)
+    public function destroy(Field $field)
     {
-        $crop->delete();
+        //
     }
 }

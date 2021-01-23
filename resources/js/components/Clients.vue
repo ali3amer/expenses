@@ -54,11 +54,88 @@
                             </button>
                         </div>
                         <div class="modal-body">
+
                             <div class="form-group">
-                                <input v-model="form.name" type="text" name="name" placeholder="إسم الولايه"
+                                <input v-model="form.name" type="text" placeholder="الإسم"
                                        class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
                                 <has-error :form="form" field="name"></has-error>
                             </div>
+
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <input v-model="form.nID" type="text" placeholder="الرقم الوطني"
+                                           class="form-control" :class="{ 'is-invalid': form.errors.has('nID') }">
+                                    <has-error :form="form" field="nID"></has-error>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <input v-model="form.age" type="date" placeholder="العمر"
+                                           class="form-control" :class="{ 'is-invalid': form.errors.has('age') }">
+                                    <has-error :form="form" field="age"></has-error>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <select v-model="form.gender" class="form-control" :class="{ 'is-invalid': form.errors.has('gender') }">
+                                        <option value="">إختر النوع............</option>
+                                        <option value="male">ذكر</option>
+                                        <option value="female">أنثى</option>
+                                    </select>
+                                    <has-error :form="form" field="gender"></has-error>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <input v-model="form.health" type="text" placeholder="الحاله الصحيه"
+                                           class="form-control" :class="{ 'is-invalid': form.errors.has('health') }">
+                                    <has-error :form="form" field="health"></has-error>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <input v-model="form.phone" type="text" placeholder="رقم التلفون"
+                                           class="form-control" :class="{ 'is-invalid': form.errors.has('phone') }">
+                                    <has-error :form="form" field="phone"></has-error>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <input v-model="form.work" type="text" placeholder="العمل"
+                                           class="form-control" :class="{ 'is-invalid': form.errors.has('work') }">
+                                    <has-error :form="form" field="work"></has-error>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <input v-model="form.income" type="text" placeholder="الدخل"
+                                           class="form-control" :class="{ 'is-invalid': form.errors.has('income') }">
+                                    <has-error :form="form" field="income"></has-error>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <input v-model="form.status" type="text" placeholder="الحاله الاجتماعيه"
+                                           class="form-control" :class="{ 'is-invalid': form.errors.has('status') }">
+                                    <has-error :form="form" field="status"></has-error>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <input v-model="form.numberFamily" type="text" name="name" placeholder="عدد افراد الاسره"
+                                           class="form-control" :class="{ 'is-invalid': form.errors.has('numberFamily') }">
+                                    <has-error :form="form" field="numberFamily"></has-error>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <select v-model="form.zone_id" class="form-control" :class="{ 'is-invalid': form.errors.has('zone_id') }">
+                                        <option value="">إختر النوع............</option>
+                                        <option v-for="zone in zones" :value="zone.id">{{ zone.name }}</option>
+                                    </select>
+                                    <has-error :form="form" field="zone_id"></has-error>
+                                </div>
+                            </div>
+
                         </div>
                         <div class="modal-footer">
                             <button type="submit" v-show="editMode" class="btn btn-success">تعديل</button>
@@ -79,14 +156,25 @@ export default {
     data() {
         return {
             editMode: false,
-            modalTitle: 'states',
-            routeTitle: 'state',
-            title: 'الولايات',
-            subtitle: 'ولايه',
+            modalTitle: 'clients',
+            routeTitle: 'client',
+            title: 'العملاء',
+            subtitle: 'عميل',
             rows: {},
+            zones: {},
             form: new Form({
                 id: '',
-                name: ''
+                name: '',
+                nID:  '',
+                age:  '',
+                gender:  '',
+                health:  '',
+                phone:  '',
+                work:  '',
+                income:  '',
+                status:  '',
+                numberFamily: '',
+                zone_id:  '',
             })
         }
     },
@@ -177,11 +265,19 @@ export default {
                         title: "لم يتم الحفظ "
                     });
                 });
-        }
+        },
+    getTowns() {
+        axios.get('api/state/' + this.state).then(({data}) => (this.towns = data));
+    },
+    getUnits() {
+        axios.get('api/town/' + this.town).then(({data}) => (this.units = data));
+    }
     },
     created() {
 
         this.loadData();
+
+        axios.get('api/zone?zone=all').then(({data}) => (this.zones = data));
 
     }
 }

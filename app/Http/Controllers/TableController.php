@@ -1,21 +1,20 @@
 <?php
 
-namespace App\Http\Controllers\Dashboard;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Zone;
+use App\Table;
 use Illuminate\Http\Request;
 
-class ZoneController extends Controller
+class TableController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        return Zone::with('unit')->where('unit_id', $request->unit)->paginate(10);
+        //
     }
 
     /**
@@ -36,23 +35,16 @@ class ZoneController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'name'  =>  'required|unique:zones|string|max:191',
-            'unit_id'  =>  'required|integer'
-        ]);
-        return Zone::create([
-            'name'  =>  $request['name'],
-            'unit_id'  =>  $request['unit_id'],
-        ]);
+        //
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Zone  $zone
+     * @param  \App\Table  $table
      * @return \Illuminate\Http\Response
      */
-    public function show(Zone $zone)
+    public function show(Table $table)
     {
         //
     }
@@ -60,10 +52,10 @@ class ZoneController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Zone  $zone
+     * @param  \App\Table  $table
      * @return \Illuminate\Http\Response
      */
-    public function edit(Zone $zone)
+    public function edit(Table $table)
     {
         //
     }
@@ -72,26 +64,22 @@ class ZoneController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Zone  $zone
+     * @param  \App\Table  $table
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Zone $zone)
+    public function update(Request $request, Table $table)
     {
-        $this->validate($request, [
-            'name'  =>  'required|string|max:191|unique:zones,name,'.$zone->id,
-            'unit_id'  =>  'required|integer'
-        ]);
-        $zone->update($request->all());
+        //
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Zone  $zone
+     * @param  \App\Table  $table
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Zone $zone)
+    public function destroy(Table $table)
     {
-        $zone->delete();
+        //
     }
 }

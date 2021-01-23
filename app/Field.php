@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Receipt extends Model
+class Field extends Model
 {
-    protected $guarded = [];
+    //
 }

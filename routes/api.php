@@ -19,11 +19,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::resource('user', 'Dashboard\UserController');
-Route::resource('crop', 'Dashboard\CropController');
-Route::resource('delegate', 'Dashboard\DelegateController');
-Route::resource('office', 'Dashboard\OfficeController');
 Route::resource('state', 'Dashboard\StateController');
 Route::resource('town', 'Dashboard\TownController');
+Route::resource('unit', 'Dashboard\UnitController');
 Route::resource('zone', 'Dashboard\ZoneController');
-Route::resource('book', 'Dashboard\BookController');
-Route::resource('receipt', 'Dashboard\ReceiptController');
+Route::resource('client', 'Dashboard\ClientController');
+

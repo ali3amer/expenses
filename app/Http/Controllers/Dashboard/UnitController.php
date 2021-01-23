@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-use App\Office;
+use App\Unit;
+use App\Zone;
 use Illuminate\Http\Request;
 
-class OfficeController extends Controller
+class UnitController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,13 +16,12 @@ class OfficeController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->office == 'all') {
-            return Office::all();
-        }elseif ($request->town != null) {
-            return Office::with('town')->where('town_id', $request->town)->latest()->paginate(5);
+        if ($request->select == 'all') {
+            return Unit::all();
+        } elseif ($request->town != null) {
+            return Unit::with('town')->where('town_id', $request->town)->paginate(10);
         } else {
-//            return Office::with('zones')->latest()->paginate(5);
-            return Office::with('town')->latest()->paginate(5);
+            return Unit::with('town')->paginate(10);
         }
     }
 
@@ -44,34 +44,33 @@ class OfficeController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'name'  =>  'required|unique:offices|string|max:191',
-            'town_id'  =>  'required|integer'
+            'name' => 'required|unique:units|string|max:191',
+            'town_id' => 'required|integer'
         ]);
-
-        return Office::create([
-            'name'  =>  $request['name'],
-            'town_id'  =>  $request['town_id'],
+        return Unit::create([
+            'name' => $request['name'],
+            'town_id' => $request['town_id'],
         ]);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Office  $office
+     * @param  \App\Unit  $unit
      * @return \Illuminate\Http\Response
      */
-    public function show(Office $office)
+    public function show(Unit $unit)
     {
-        //
+        return Zone::where('unit_id', $unit->id)->get()->keyBy('id');
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Office  $office
+     * @param  \App\Unit  $unit
      * @return \Illuminate\Http\Response
      */
-    public function edit(Office $office)
+    public function edit(Unit $unit)
     {
         //
     }
@@ -80,26 +79,26 @@ class OfficeController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Office  $office
+     * @param  \App\Unit  $unit
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Office $office)
+    public function update(Request $request, Unit $unit)
     {
         $this->validate($request, [
-            'name'  =>  'required|string|max:191|unique:offices,name,'.$office->id,
-            'town_id'  =>  'required|integer'
+            'name' => 'required|string|max:191|unique:units,name,' . $unit->id,
+            'town_id' => 'required|integer'
         ]);
-        $office->update($request->all());
+        $unit->update($request->all());
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Office  $office
+     * @param  \App\Unit  $unit
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Office $office)
+    public function destroy(Unit $unit)
     {
-        $office->delete();
+        $unit->delete();
     }
 }

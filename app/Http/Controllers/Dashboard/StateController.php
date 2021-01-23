@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\State;
+use App\Town;
 use Illuminate\Http\Request;
 
 class StateController extends Controller
@@ -19,7 +20,7 @@ class StateController extends Controller
         if ($request->state == 'all') {
             return State::all();
         } else {
-            return State::latest()->paginate(5);
+            return State::paginate(10);
         }
 
     }
@@ -59,7 +60,7 @@ class StateController extends Controller
      */
     public function show(State $state)
     {
-        //
+        return Town::where('state_id', $state->id)->get()->keyBy('id');
     }
 
     /**

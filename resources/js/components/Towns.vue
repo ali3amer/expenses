@@ -7,10 +7,9 @@
         <div class="box box-primary">
             <div class="box-header">
                 <h3 class="box-title" style="display: inline-block">{{ title }}</h3>
-                <select id="state" @change="searchResults">
+                <select v-model="state" @change="loadData">
                     <option value="">إختر الولايه ........</option>
-                    <option v-for="(state, index) in states" :key="state.id" :value="state.id">{{ state.name }}
-                    </option>
+                    <option v-for="(state, index) in states" :key="state.id" :value="state.id">{{ state.name }}</option>
                 </select>
 
 
@@ -31,13 +30,13 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr v-for="(town, index) in towns.data" :key="town.id">
+                    <tr v-for="(row, index) in rows.data" :key="row.id">
                         <td>{{ index + 1 }}</td>
-                        <td>{{ town.name }}</td>
-                        <td>{{ town.state.name }}</td>
+                        <td>{{ row.name }}</td>
+                        <td>{{ row.state.name }}</td>
                         <td>
-                            <a href="#" :data-target="'#' + modalTitle" @click="editModal(town)"><i
-                                class="fa fa-edit blue"></i></a> / <a href="#" @click="deleteData(town.id)"><i
+                            <a href="#" :data-target="'#' + modalTitle" @click="editModal(row)"><i
+                                class="fa fa-edit blue"></i></a> / <a href="#" @click="deleteData(row.id)"><i
                             class="fa fa-trash red"></i></a>
                         </td>
                     </tr>
@@ -46,7 +45,7 @@
             </div>
             <!-- /.box-body -->
             <div class="box-footer">
-                <pagination :data="towns" @pagination-change-page="getResults"></pagination>
+                <pagination :data="rows" @pagination-change-page="getResults"></pagination>
 
             </div>
         </div>
@@ -69,7 +68,7 @@
                         </div>
                         <div class="modal-body">
                             <div class="form-group">
-                                <input v-model="form.name" type="text" name="name" placeholder="Name"
+                                <input v-model="form.name" type="text" name="name" placeholder="إسم المحليه"
                                        class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
                                 <has-error :form="form" field="name"></has-error>
                             </div>
@@ -101,136 +100,124 @@
 </template>
 
 <script>
-    export default {
-        data() {
-            return {
-                editMode: false,
-                modalTitle: 'towns',
-                title: 'المحليات',
-                subtitle: 'محليه',
-                states: {},
-                towns: {},
-                form: new Form({
-                    id: '',
-                    name: '',
-                    state_id: ''
-                })
-            }
-        },
-        methods: {
-            searchResults() {
-                axios.get('api/town?state=' + $("#state").val())
-                    .then(response => {
-                        this.towns = response.data;
-                    });
-            },
-            getResults(page = 1) {
-                axios.get('api/town?page=' + page)
-                    .then(response => {
-                        this.towns = response.data;
-                    });
-            },
-            updateData() {
-                this.$Progress.start();
-                this.form.put('api/town/' + this.form.id).then(() => {
-                    // Fire.$emit('afterCreate');
-
-                    $("#" + this.modalTitle).modal('hide');
-                    this.loadData();
-                    toast.fire({
-                        icon: 'success',
-                        title: 'تم التعديل بنجاح'
-                    });
-
-                    this.$Progress.finish();
-                })
-                    .catch(() => {
-                        swal("Failed", "There Was Something Wrong.", "warning");
-                    });
-            },
-            newModal() {
-                this.editMode = false;
-                this.form.reset();
-                // $("#" + this.modalTitle).modal('show');
-            },
-            editModal(town) {
-                this.editMode = true;
-                this.form.reset();
-                $("#" + this.modalTitle).modal('show');
-                this.form.fill(town);
-            },
-            deleteData(id) {
-                swal.fire({
-                    title: 'هل أنت متأكد أنك تريد الحذف',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    cancelButtonText: 'لا',
-                    confirmButtonText: 'نعم'
-                }).then((result) => {
-                    this.$Progress.start();
-                    if (result.value) {
-                        this.form.delete('api/town/' + id).then(() => {
-                            this.loadData();
-                            this.$Progress.finish();
-                            toast.fire({
-                                icon: 'success',
-                                title: 'تم الحذف بنجاح'
-                            });
-                            // Fire.$emit('afterCreate');
-                        }).catch(() => {
-                            swal.fire("Failed", "There Was Something Wrong.", "warning");
-                        });
-
-                    }
+export default {
+    data() {
+        return {
+            editMode: false,
+            modalTitle: 'towns',
+            routeTitle: 'town',
+            title: 'المحليات',
+            subtitle: 'محليه',
+            rows: {},
+            states: {},
+            state: '',
+            form: new Form({
+                id: '',
+                name: '',
+                state_id: ''
+            })
+        }
+    },
+    props:['id'],
+    methods: {
+        getResults(page = 1) {
+            axios.get('api/'+ this.routeTitle + '?page=' + page)
+                .then(response => {
+                    this.rows = response.data;
                 });
-            },
-            loadData() {
-                // if(this.$gate.isAdminOrAuthor()) {
-                axios.get('api/town?state=').then(({data}) => (this.towns = data));
-                // }
-            },
-            createData() {
-                this.$Progress.start();
+        },
+        updateData() {
+            this.$Progress.start();
+            this.form.put('api/'+ this.routeTitle + '/' + this.form.id).then(() => {
+                // Fire.$emit('afterCreate');
+
                 $("#" + this.modalTitle).modal('hide');
-                this.form
-                    .post("api/town")
-                    .then(() => {
-                        // Fire.$emit("afterCreate");
-                        $("#" + this.modalTitle).modal("hide");
-                        toast.fire({
-                            icon: "success",
-                            title: "تم الحفظ بنجاح"
-                        });
+                this.loadData();
+                toast.fire({
+                    icon: 'success',
+                    title: 'تم التعديل بنجاح'
+                });
+
+                this.$Progress.finish();
+            })
+                .catch(() => {
+                    swal("Failed", "There Was Something Wrong.", "warning");
+                });
+        },
+        newModal() {
+            this.editMode = false;
+            this.form.reset();
+        },
+        editModal(row) {
+            this.editMode = true;
+            this.form.reset();
+            $("#" + this.modalTitle).modal('show');
+            this.form.fill(row);
+        },
+        deleteData(id) {
+            swal.fire({
+                title: 'هل أنت متأكد أنك تريد الحذف',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                cancelButtonText: 'لا',
+                confirmButtonText: 'نعم'
+            }).then((result) => {
+                this.$Progress.start();
+                if (result.value) {
+                    this.form.delete('api/' + this.routeTitle + '/' + id).then(() => {
                         this.loadData();
                         this.$Progress.finish();
-                    })
-                    .catch(() => {
                         toast.fire({
-                            icon: "Failed",
-                            title: "لم يتم الحفظ "
+                            icon: 'success',
+                            title: 'تم الحذف بنجاح'
                         });
+                        // Fire.$emit('afterCreate');
+                    }).catch(() => {
+                        swal.fire("Failed", "There Was Something Wrong.", "warning");
                     });
+
+                }
+            });
+        },
+        loadData() {
+            if (this.state == '') {
+                axios.get('api/' + this.routeTitle).then(({data}) => (this.rows = data));
+            } else {
+                axios.get('api/' + this.routeTitle + '?state=' + this.state).then(({data}) => (this.rows = data));
             }
         },
-        created() {
-            axios.get('api/state?state=all').then(({data}) => (this.states = data));
-            // Fire.$on('searching', () => {
-            //     let query = this.$parent.search;
-            //     axios.get('api/findtown?q=' + query)
-            //         .then((data) => {
-            //             this.towns = data.data;
-            //         })
-            //         .catch(() => {
-            //             swal.fire("Failed", "There Was Something Wrong.", "warning");
-            //         });
-            // });
-            this.loadData();
-            // Fire.$on('afterCreate', () => {
-            //     this.loadData();
-            // });
-            //setInterval(() => this.loadData(), 3000);
+        createData() {
+            this.$Progress.start();
+            $("#" + this.modalTitle).modal('hide');
+            this.form
+                .post("api/" + this.routeTitle)
+                .then(() => {
+                    // Fire.$emit("afterCreate");
+                    $("#" + this.modalTitle).modal("hide");
+                    toast.fire({
+                        icon: "success",
+                        title: "تم الحفظ بنجاح"
+                    });
+                    this.loadData();
+                    this.$Progress.finish();
+                })
+                .catch(() => {
+                    toast.fire({
+                        icon: "Failed",
+                        title: "لم يتم الحفظ "
+                    });
+                });
         }
+    },
+    created() {
+
+        axios.get('api/state?state=all').then(({data}) => (this.states = data));
+
+        this.loadData();
+
     }
+}
 </script>
+

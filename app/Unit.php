@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Office extends Model
+class Unit extends Model
 {
     protected $guarded = [];
 
@@ -17,4 +17,5 @@ class Office extends Model
     {
         return $this->hasMany(Zone::class);
     }
+
 }
