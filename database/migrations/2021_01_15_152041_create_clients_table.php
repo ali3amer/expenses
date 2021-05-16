@@ -19,7 +19,7 @@ class CreateClientsTable extends Migration
             $table->integer('nID')->unique();
             $table->date('age');
             $table->enum('gender', ['male', 'female']);
-            $table->string('health');
+            $table->string('health')->nullable();
             $table->string('phone')->nullable();
             $table->string('work')->nullable();
             $table->string('income')->nullable();

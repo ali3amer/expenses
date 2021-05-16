@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Dashboard;
 
+use App\Field;
+use App\Http\Controllers\Controller;
 use App\Table;
 use Illuminate\Http\Request;
 
@@ -12,9 +14,15 @@ class TableController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if ($request->search != '') {
+            return Table::where('name', 'LIKE', '%' . $request->search . '%')->paginate(10);
+        } elseif($request->select == 'all') {
+            return Table::all()->keyBy('id');
+        } else {
+            return Table::paginate(10);
+        }
     }
 
     /**
@@ -35,7 +43,15 @@ class TableController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'name'  =>  'required|unique:tables|string|max:191',
+            'percentage'  =>  'required'
+        ]);
+
+        return Table::create([
+            'name'  =>  $request['name'],
+            'percentage'  =>  $request['percentage']
+        ]);
     }
 
     /**
@@ -46,7 +62,7 @@ class TableController extends Controller
      */
     public function show(Table $table)
     {
-        //
+        return Field::where('table_id', $table->id)->get()->keyBy('id');
     }
 
     /**
@@ -69,7 +85,11 @@ class TableController extends Controller
      */
     public function update(Request $request, Table $table)
     {
-        //
+        $this->validate($request, [
+            'name'  =>  'required|string|max:191|unique:tables,name,'.$table->id,
+            'percentage'  =>  'required'
+        ]);
+        $table->update($request->all());
     }
 
     /**
@@ -80,6 +100,6 @@ class TableController extends Controller
      */
     public function destroy(Table $table)
     {
-        //
+        $table->delete();
     }
 }

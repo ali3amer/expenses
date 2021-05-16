@@ -13,9 +13,13 @@ class ClientController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Client::paginate(10);
+        if ($request->select == "all") {
+            return Client::where('zone_id', $request->zone_id)->where('name', 'LIKE', '%' . $request->search . '%')->orWhere('nID', $request->search)->get()->keyby('id');
+        } elseif ($request->zone_id != '') {
+            return Client::where('zone_id', $request->zone_id)->where('name', 'LIKE', '%' . $request->search . '%')->orWhere('nID', $request->search)->paginate(10);
+        }
     }
 
     /**
@@ -39,14 +43,6 @@ class ClientController extends Controller
         $this->validate($request, [
             'name'  =>  'required|string|max:191',
             'nID'  =>  'required|unique:clients',
-            'age'  =>  'required',
-            'gender'  =>  'required',
-            'health'  =>  'required',
-            'phone'  =>  'required',
-            'work'  =>  'required',
-            'income'  =>  'required',
-            'status'  =>  'required',
-            'numberFamily'  =>  'required',
             'zone_id'  =>  'required',
         ]);
 
@@ -98,15 +94,7 @@ class ClientController extends Controller
     {
         $this->validate($request, [
             'name'  =>  'required|string|max:191',
-            'nID'  =>  'required|unique:clients',
-            'age'  =>  'required',
-            'gender'  =>  'required',
-            'health'  =>  'required',
-            'phone'  =>  'required',
-            'work'  =>  'required',
-            'income'  =>  'required',
-            'status'  =>  'required',
-            'numberFamily'  =>  'required',
+            'nID'  =>  'required|unique:clients,name,'.$client->id,
             'zone_id'  =>  'required',
         ]);
 

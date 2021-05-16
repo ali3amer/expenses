@@ -1,89 +1,88 @@
 <template>
     <div>
 
-        <!--        <div v-if="!$gate.isAdminOrAuthor()">-->
-        <!--            <not-found></not-found>-->
-        <!--        </div>-->
-        <div class="box box-primary">
-            <div class="box-header">
-                <h3 class="box-title" style="display: inline-block">{{ title }}</h3>
-                <select v-model="state" @change="loadData">
-                    <option value="">إختر الولايه ........</option>
-                    <option v-for="(state, index) in states" :key="state.id" :value="state.id">{{ state.name }}</option>
-                </select>
+<!--        <div v-if="!$gate.isAdminOrAuthor()">-->
+<!--            <not-found></not-found>-->
+<!--        </div>-->
+                <div class="box box-primary">
+                    <div class="box-header">
+                        <h3 class="box-title">{{ title }}</h3>
 
+                        <select v-model="form.year">
+                            <option value="">إختر العام ........</option>
+                            <option v-for="n in 30" v-if="n >= 20" :value="'20' + n">20{{ n }}</option>
+                        </select>
 
-                <div class="box-tools">
-                    <button class="btn btn-primary" data-toggle="modal" @click="newModal()"
-                            :data-target="'#' + modalTitle"><i class="fa fa-plus"></i></button>
+                        <select v-model="form.type" @change="loadData">
+                            <option value="">إختر نوع الدعم ........</option>
+                            <option value="1">نقدي</option>
+                            <option value="2">عيني</option>
+                        </select>
+
+                        <div class="box-tools">
+                            <button class="btn btn-primary" data-toggle="modal" @click="newModal()" :data-target="'#' + modalTitle"><i class="fa fa-plus"></i></button>
+                        </div>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body table-responsive p-0">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th>إسم البرنامج</th>
+                                <th>التحكم</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(row, index) in rows" :key="row.id">
+                                <td>{{ row.name }}</td>
+                                <td>
+                                    <a href="#" :data-target="'#' + modalTitle" @click="editModal(row)"><i class="fa fa-edit blue"></i></a> / <a href="#" @click="deleteData(row.id)"><i class="fa fa-trash red"></i></a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+<!--                        <pagination :data="rows" @pagination-change-page="getResults"></pagination>-->
+
+                    </div>
                 </div>
-            </div>
-            <!-- /.box-header -->
-            <div class="box-body table-responsive p-0">
-                <table class="table table-bordered table-hover">
-                    <thead>
-                    <tr>
-                        <th>الرقم</th>
-                        <th>إسم المحليه</th>
-                        <th>الولايه</th>
-                        <th>التحكم</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="(row, index) in rows.data" :key="row.id">
-                        <td>{{ index + 1 }}</td>
-                        <td>{{ row.name }}</td>
-                        <td>{{ row.state.name }}</td>
-                        <td>
-                            <a href="#" :data-target="'#' + modalTitle" @click="editModal(row)"><i
-                                class="fa fa-edit blue"></i></a> / <a href="#" @click="deleteData(row.id)"><i
-                            class="fa fa-trash red"></i></a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-            <!-- /.box-body -->
-            <div class="box-footer">
-                <pagination :data="rows" @pagination-change-page="getResults"></pagination>
+                <!-- /.box -->
 
-            </div>
-        </div>
-        <!-- /.box -->
-
-        <div class="modal fade" :id="modalTitle" tabindex="-1" role="dialog" aria-labelledby="addNewLabel"
-             aria-hidden="true">
+        <div class="modal fade" :id="modalTitle" tabindex="-1" role="dialog" aria-labelledby="addNewLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
 
                 <div class="modal-content">
                     <form @submit.prevent="editMode ? updateData() : createData()">
                         <div class="modal-header">
-                            <h4 class="modal-title" style="display:inline-block" v-show="editMode" id="addNewLabel1">
-                                تعديل بيانات {{ subtitle }}</h4>
-                            <h4 class="modal-title" style="display:inline-block" v-show="!editMode" id="addNewLabel">
-                                إضافة {{ subtitle }} جديده</h4>
+                            <h4 class="modal-title" style="display:inline-block" v-show="editMode" id="addNewLabel1">تعديل بيانات {{ subtitle }}</h4>
+                            <h4 class="modal-title" style="display:inline-block" v-show="!editMode" id="addNewLabel">إضافة {{ subtitle }} جديد</h4>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
                             <div class="form-group">
-                                <input v-model="form.name" type="text" name="name" placeholder="إسم المحليه"
+                                <input v-model="form.name" type="text" name="name" placeholder="إسم البرنامج"
                                        class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
                                 <has-error :form="form" field="name"></has-error>
                             </div>
-
                             <div class="form-group">
-                                <select name="state_id" v-model="form.state_id" :class="{ 'is-invalid': form.errors.has('state_id') }"
-                                        class="form-control">
-                                    <option value="">إختر الولايه ........</option>
-                                    <option v-for="(state, index) in states" :key="state.id" :value="state.id">{{
-                                        state.name }}
-                                    </option>
+                                <select v-model="form.type" class="form-control" :class="{ 'is-invalid': form.errors.has('year') }">
+                                    <option value="">إختر نوع الدعم ........</option>
+                                    <option value="1">نقدي</option>
+                                    <option value="2">عيني</option>
                                 </select>
-                                <has-error :form="form" field="state_id"></has-error>
+                                <has-error :form="form" field="year"></has-error>
                             </div>
-
+                            <div class="form-group">
+                                <select v-model="form.year" class="form-control" :class="{ 'is-invalid': form.errors.has('year') }">
+                                    <option value="">إختر العام ........</option>
+                                    <option v-for="n in 30" v-if="n >= 20" :value="'20' + n">20{{ n }}</option>
+                                </select>
+                                <has-error :form="form" field="year"></has-error>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="submit" v-show="editMode" class="btn btn-success">تعديل</button>
@@ -100,21 +99,22 @@
 </template>
 
 <script>
+import moment from "moment";
+
 export default {
     data() {
         return {
             editMode: false,
-            modalTitle: 'towns',
-            routeTitle: 'town',
-            title: 'المحليات',
-            subtitle: 'محليه',
+            modalTitle: 'programs',
+            routeTitle: 'program',
+            title: 'ادارة البرامج',
+            subtitle: 'برنامج',
             rows: {},
-            states: {},
-            state: '',
             form: new Form({
                 id: '',
                 name: '',
-                state_id: ''
+                year: '',
+                type: ''
             })
         }
     },
@@ -150,6 +150,7 @@ export default {
         newModal() {
             this.editMode = false;
             this.form.reset();
+            this.form.year = moment(new Date()).format('YYYY');
         },
         editModal(row) {
             this.editMode = true;
@@ -188,10 +189,8 @@ export default {
             });
         },
         loadData() {
-            if (this.state == '') {
-                axios.get('api/' + this.routeTitle).then(({data}) => (this.rows = data));
-            } else {
-                axios.get('api/' + this.routeTitle + '?state=' + this.state).then(({data}) => (this.rows = data));
+            if (this.form.year != '' && this.form.type != '') {
+                axios.get('api/' + this.routeTitle + '?year=' + this.form.year + '&type=' + this.form.type).then(({data}) => (this.rows = data));
             }
         },
         createData() {
@@ -219,11 +218,10 @@ export default {
     },
     created() {
 
-        axios.get('api/state?state=all').then(({data}) => (this.states = data));
+        this.form.year = moment(new Date()).format('YYYY');
 
         this.loadData();
 
     }
 }
 </script>
-

@@ -4,12 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Field extends Model
+class User_Power extends Model
 {
     protected $guarded = [];
 
-    public function table()
+    public function user()
     {
-        return $this->belongsTo(Table::class);
+        return $this->belongsTo(User::class);
     }
 }

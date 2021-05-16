@@ -21,6 +21,9 @@ import VueRouter from 'vue-router'
 
 Vue.use(VueRouter);
 
+import moment from 'moment';
+moment().format();
+
 import swal from 'sweetalert2';
 
 window.swal = swal;
@@ -49,6 +52,12 @@ const routes = [
     {path: '/zones', component: require('./components/Zones.vue').default},
     {path: '/users', component: require('./components/Users.vue').default},
     {path: '/clients', component: require('./components/Clients.vue').default},
+    {path: '/tables', component: require('./components/Tables.vue').default},
+    {path: '/fields', component: require('./components/Fields.vue').default},
+    {path: '/supplies', component: require('./components/Supplies.vue').default},
+    {path: '/reports', component: require('./components/Reports.vue').default},
+    {path: '/programs', component: require('./components/Programs.vue').default},
+    {path: '/mangePrograms', component: require('./components/mangePrograms.vue').default},
 ];
 
 const router = new VueRouter({

@@ -1,9 +1,6 @@
 <template>
     <div>
 
-        <!--        <div v-if="!$gate.isAdminOrAuthor()">-->
-        <!--            <not-found></not-found>-->
-        <!--        </div>-->
         <div class="box box-primary">
             <div class="box-header">
                 <h3 class="box-title">{{ title }}</h3>
@@ -20,7 +17,6 @@
                     <tr>
                         <th>الرقم</th>
                         <th>الاسم</th>
-                        <th>الإيميل</th>
                         <th>التحكم</th>
                     </tr>
                     </thead>
@@ -28,7 +24,6 @@
                     <tr v-for="(row, index) in rows.data" :key="row.id">
                         <td>{{ index + 1 }}</td>
                         <td>{{ row.name }}</td>
-                        <td>{{ row.email }}</td>
                         <td>
                             <a href="#" :data-target="'#' + modalTitle" @click="editModal(row)"><i
                                 class="fa fa-edit blue"></i></a> / <a href="#" @click="deleteData(row.id)"><i
@@ -68,16 +63,37 @@
                             </div>
 
                             <div class="form-group">
-                                <input v-model="form.email" type="email" name="email" placeholder="البريد الإلكتروني"
-                                       class="form-control" :class="{ 'is-invalid': form.errors.has('email') }">
-                                <has-error :form="form" field="email"></has-error>
-                            </div>
-
-                            <div class="form-group">
-                                <input v-model="form.password" type="password" name="password" placeholder="كلnمة السر"
+                                <input v-model="form.password" type="password" name="password" placeholder="كلمة السر"
                                        class="form-control" :class="{ 'is-invalid': form.errors.has('password') }">
                                 <has-error :form="form" field="password"></has-error>
                             </div>
+
+                            <div class="form-group">
+                                <select v-model="form.power" class="form-control" :class="{ 'is-invalid': form.errors.has('power') }">
+                                    <option value="">إختر الصلاحيه ....................</option>
+                                    <option value="developer" v-if="permissions.power == 'developer'">مبرمج</option>
+                                    <option value="admin" v-if="permissions.power == 'developer'">مدير نظام</option>
+                                    <option value="town">مستخدم محليه</option>
+                                </select>
+                                <has-error :form="form" field="power"></has-error>
+                            </div>
+
+                            <div class="form-group">
+                                <select v-model="form.state_id" disabled class="form-control" :class="{ 'is-invalid': form.errors.has('state_id') }">
+                                    <option value="">إختر الولايه ....................</option>
+                                    <option v-for="state in states" :value="state.id">{{ state.name }}</option>
+                                </select>
+                                <has-error :form="form" field="state_id"></has-error>
+                            </div>
+
+                            <div class="form-group" v-if="form.power == 'town'">
+                                <select v-model="form.town_id" class="form-control" :class="{ 'is-invalid': form.errors.has('town_id') }">
+                                    <option value="">إختر المحليه ....................</option>
+                                    <option v-for="town in towns" :value="town.id">{{ town.name }}</option>
+                                </select>
+                                <has-error :form="form" field="town_id"></has-error>
+                            </div>
+
                         </div>
                         <div class="modal-footer">
                             <button type="submit" v-show="editMode" class="btn btn-success">تعديل</button>
@@ -103,15 +119,20 @@
                 title: 'المستخدمين',
                 subtitle: 'مستخدم',
                 rows: {},
+                state: '',
+                states: {},
+                towns: {},
                 form: new Form({
                     id: '',
                     name: '',
-                    email: '',
-                    password: ''
+                    password: '',
+                    state_id: '',
+                    town_id: '',
+                    power: ''
                 })
             }
         },
-        props:['id'],
+        props:['permissions'],
         methods: {
             getResults(page = 1) {
                 axios.get('api/'+ this.routeTitle + '?page=' + page)
@@ -134,18 +155,23 @@
                     this.$Progress.finish();
                 })
                     .catch(() => {
-                        swal("Failed", "There Was Something Wrong.", "warning");
+                        toast.fire({
+                            icon: "error",
+                            title: "لم يتم التعديل"
+                        });
                     });
             },
             newModal() {
                 this.editMode = false;
                 this.form.reset();
+                this.form.state_id = this.permissions.state_id;
             },
             editModal(row) {
                 this.editMode = true;
                 this.form.reset();
                 $("#" + this.modalTitle).modal('show');
                 this.form.fill(row);
+                this.form.town_id = row.user_power.town_id;
             },
             deleteData(id) {
                 swal.fire({
@@ -168,7 +194,10 @@
                             });
                             // Fire.$emit('afterCreate');
                         }).catch(() => {
-                            swal.fire("Failed", "There Was Something Wrong.", "warning");
+                            toast.fire({
+                                icon: "error",
+                                title: "لم يتم الحذف"
+                            });
                         });
 
                     }
@@ -198,11 +227,21 @@
                             title: "لم يتم الحفظ "
                         });
                     });
-            }
+            },
+            getTowns() {
+                axios.get('api/state/' + this.permissions.state_id).then(({data}) => (this.towns = data));
+            },
         },
         created() {
 
             this.loadData();
+
+            axios.get('api/state?state=all').then(({data}) => (this.states = data));
+
+            this.state = this.permissions.state_id;
+
+
+            this.getTowns();
 
         }
     }

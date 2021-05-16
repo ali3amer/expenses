@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Cash;
+use App\Crop;
 use App\Http\Controllers\Controller;
+use App\Program;
 use App\Unit;
 use App\Zone;
 use Illuminate\Http\Request;
@@ -38,7 +41,7 @@ class UnitController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -56,18 +59,34 @@ class UnitController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Unit  $unit
+     * @param \App\Unit $unit
      * @return \Illuminate\Http\Response
      */
-    public function show(Unit $unit)
+    public function show(Unit $unit, Request $request)
     {
-        return Zone::where('unit_id', $unit->id)->get()->keyBy('id');
+        if ($request->program != '') {
+            $zones = Zone::where('unit_id', $unit->id)->get()->keyBy('id');
+            $data = [];
+            $program = Program::where('id', $request->program)->first();
+            if ($program['type'] == 1) {
+                foreach ($zones as $zone) {
+                    $data[$zone->id] = Cash::where('program_id', $request->program)->where('zone_id', $zone->id)->with('client')->get()->keyBy('client_id');
+                }
+            } elseif ($program['type'] == 2) {
+                foreach ($zones as $zone) {
+                    $data[$zone->id] = Crop::where('program_id', $request->program)->where('zone_id', $zone->id)->with('client')->get()->keyBy('client_id');
+                }
+            }
+            return $data;
+        } else {
+            return Zone::where('unit_id', $unit->id)->get()->keyBy('id');
+        }
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Unit  $unit
+     * @param \App\Unit $unit
      * @return \Illuminate\Http\Response
      */
     public function edit(Unit $unit)
@@ -78,8 +97,8 @@ class UnitController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Unit  $unit
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Unit $unit
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Unit $unit)
@@ -94,7 +113,7 @@ class UnitController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Unit  $unit
+     * @param \App\Unit $unit
      * @return \Illuminate\Http\Response
      */
     public function destroy(Unit $unit)

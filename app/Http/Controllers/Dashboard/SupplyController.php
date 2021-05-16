@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-use App\Zone;
+use App\Supply;
 use Illuminate\Http\Request;
 
-class ZoneController extends Controller
+class SupplyController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,9 +16,11 @@ class ZoneController extends Controller
     public function index(Request $request)
     {
         if ($request->select == 'all') {
-            return Zone::all()->keyBy('id');
-        }else {
-            return Zone::with('unit')->where('unit_id', $request->unit)->paginate(10);
+            return Supply::all()->keyBy('id');
+        } elseif ($request->search != '') {
+            return Supply::where('name', 'LIKE', '%' . $request->search . '%')->paginate(10);
+        } else {
+            return Supply::paginate(10);
         }
     }
 
@@ -41,22 +43,23 @@ class ZoneController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'name'  =>  'required|unique:zones|string|max:191',
-            'unit_id'  =>  'required|integer'
+            'name'  =>  'required|unique:supplies|string|max:191',
+            'weight' => 'required'
         ]);
-        return Zone::create([
+
+        return Supply::create([
             'name'  =>  $request['name'],
-            'unit_id'  =>  $request['unit_id'],
+            'weight' => $request['weight']
         ]);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Zone  $zone
+     * @param  \App\Supply  $supply
      * @return \Illuminate\Http\Response
      */
-    public function show(Zone $zone)
+    public function show(Supply $supply)
     {
         //
     }
@@ -64,10 +67,10 @@ class ZoneController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Zone  $zone
+     * @param  \App\Supply  $supply
      * @return \Illuminate\Http\Response
      */
-    public function edit(Zone $zone)
+    public function edit(Supply $supply)
     {
         //
     }
@@ -76,26 +79,26 @@ class ZoneController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Zone  $zone
+     * @param  \App\Supply  $supply
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Zone $zone)
+    public function update(Request $request, Supply $supply)
     {
         $this->validate($request, [
-            'name'  =>  'required|string|max:191|unique:zones,name,'.$zone->id,
-            'unit_id'  =>  'required|integer'
+            'name'  =>  'required|string|max:191|unique:supplies,name,'.$supply->id,
+            'weight' => 'required'
         ]);
-        $zone->update($request->all());
+        $supply->update($request->all());
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Zone  $zone
+     * @param  \App\Supply  $supply
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Zone $zone)
+    public function destroy(Supply $supply)
     {
-        $zone->delete();
+        $supply->delete();
     }
 }

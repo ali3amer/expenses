@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Field;
 use App\Http\Controllers\Controller;
-use App\Zone;
 use Illuminate\Http\Request;
 
-class ZoneController extends Controller
+class FieldController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,9 +16,15 @@ class ZoneController extends Controller
     public function index(Request $request)
     {
         if ($request->select == 'all') {
-            return Zone::all()->keyBy('id');
-        }else {
-            return Zone::with('unit')->where('unit_id', $request->unit)->paginate(10);
+            return Field::all()->keyBy('id');
+        } elseif ($request->search != '' && $request->table != '') {
+            return Field::with('table')->where('table_id', $request->table)->where('name', 'LIKE', '%' . $request->search . '%')->paginate(10);
+        } elseif($request->search != '') {
+            return Field::with('table')->where('name', 'LIKE', '%' . $request->search . '%')->paginate(10);
+        } elseif($request->table != '') {
+            return Field::with('table')->where('table_id', $request->table)->paginate(10);
+        } else {
+            return Field::with('table')->paginate(10);
         }
     }
 
@@ -41,22 +47,23 @@ class ZoneController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'name'  =>  'required|unique:zones|string|max:191',
-            'unit_id'  =>  'required|integer'
+            'name'  =>  'required|unique:fields|string|max:191',
+            'table_id' => 'required'
         ]);
-        return Zone::create([
+
+        return Field::create([
             'name'  =>  $request['name'],
-            'unit_id'  =>  $request['unit_id'],
+            'table_id'  =>  $request['table_id']
         ]);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Zone  $zone
+     * @param  \App\Field  $field
      * @return \Illuminate\Http\Response
      */
-    public function show(Zone $zone)
+    public function show(Field $field)
     {
         //
     }
@@ -64,10 +71,10 @@ class ZoneController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Zone  $zone
+     * @param  \App\Field  $field
      * @return \Illuminate\Http\Response
      */
-    public function edit(Zone $zone)
+    public function edit(Field $field)
     {
         //
     }
@@ -76,26 +83,26 @@ class ZoneController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Zone  $zone
+     * @param  \App\Field  $field
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Zone $zone)
+    public function update(Request $request, Field $field)
     {
         $this->validate($request, [
-            'name'  =>  'required|string|max:191|unique:zones,name,'.$zone->id,
-            'unit_id'  =>  'required|integer'
+            'name'  =>  'required|string|max:191|unique:fields,name,'.$field->id,
+            'table_id' => 'required'
         ]);
-        $zone->update($request->all());
+        $field->update($request->all());
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Zone  $zone
+     * @param  \App\Field  $field
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Zone $zone)
+    public function destroy(Field $field)
     {
-        $zone->delete();
+        $field->delete();
     }
 }

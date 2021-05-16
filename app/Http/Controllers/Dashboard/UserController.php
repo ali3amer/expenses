@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Delegate;
 use App\Http\Controllers\Controller;
 use App\User;
+use App\User_Power;
 use App\Zone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -21,7 +22,7 @@ class UserController extends Controller
         if ($request->user == 'all') {
             return User::all();
         } else {
-            return User::paginate(10);
+            return User::with('user_power')->paginate(10);
         }
     }
 
@@ -44,16 +45,25 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'name'  =>  'required|string|max:191',
-            'email'  =>  'required|string|email|max:191|unique:users',
+            'name'  =>  'required|string|max:191|unique:users',
             'password'  =>  'required|string|min:6',
+            'state_id'  =>  'required',
+            'power'  =>  'required'
         ]);
 
-        return User::create([
+        $user = User::create([
             'name'  =>  $request['name'],
-            'email'  =>  $request['email'],
-            'password'  =>  Hash::make($request['password'])
+            'password'  =>  Hash::make($request['password']),
+            'state_id'  =>  $request['state_id'],
+            'power'  =>  $request['power'],
         ]);
+
+        if ($user->power == 'town') {
+            User_Power::create([
+                'user_id' => $user->id,
+                'town_id' => $request->town_id
+            ]);
+        }
 
     }
 
@@ -95,11 +105,27 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $this->validate($request, [
-            'name'  =>  'required|string|max:191',
-            'email'  =>  'required|string|email|max:191|unique:users,email,'.$user->id,
-            'password'  =>  'sometimes|string|min:6'
+            'name'  =>  'required|string|max:191|unique:users,name,'.$user->id,
+            'password'  =>  'sometimes|string|min:6',
+            'state_id'  =>  'required',
+            'power'  =>  'required'
         ]);
-        $user->update($request->all());
+
+        $user->update([
+            'name'  =>  $request['name'],
+            'password'  =>  Hash::make($request['password']),
+            'state_id'  =>  $request['state_id'],
+            'power'  =>  $request['power'],
+        ]);
+
+        User_Power::where('user_id', $user->id)->delete();
+
+        if ($request->power == 'town') {
+            User_Power::create([
+                'user_id' => $user->id,
+                'town_id' => $request->town_id
+            ]);
+        }
     }
 
     /**

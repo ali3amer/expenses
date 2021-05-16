@@ -20,7 +20,7 @@
 
         <style>
             body, h1, h2, h3, h4, h5, h6 {
-                font-family: 'Cairo', sans-serif !important;
+                /*font-family: 'Cairo', sans-serif !important;*/
             }
             #add {
                 display: none;
@@ -32,7 +32,7 @@
         .box-header .box-title {
             margin-bottom: 10px;
         }
-        .mr-2{
+        .mr-2 {
             margin-right: 5px;
         }
 
@@ -93,8 +93,8 @@
         {{--<!-- Logo -->--}}
         <a href="{{ asset('dashboard') }}/index2.html" class="logo">
             {{--<!-- mini logo for sidebar mini 50x50 pixels -->--}}
-            <span class="logo-mini"><b>A</b>LT</span>
-            <span class="logo-lg"><b>Admin</b>LTE</span>
+            <span class="logo-mini">المصارف</span>
+            <span class="logo-lg">المصارف</span>
         </a>
 
         <nav class="navbar navbar-static-top">
@@ -107,41 +107,15 @@
             </a>
 
             <div class="navbar-custom-menu">
-                <ul class="nav navbar-nav">
+                <ul class="nav navbar-nav" style="padding-top: 7px; padding-left: 7px">
+                    <a href="{{ route('logout') }}" class="btn btn-danger" onclick="event.preventDefault();
+                                                 document.getElementById('logout-form').submit();">
+                        <i class="fa fa-power-off"></i>
+                    </a>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        @csrf
+                    </form>
 
-                    {{--<!-- User Account: style can be found in dropdown.less -->--}}
-                    <li class="dropdown user user-menu">
-
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            <img src="{{ asset('dashboard_files/img/user2-160x160.jpg') }}" class="user-image" alt="User Image">
-                            <span class="hidden-xs">{{ auth()->user()->first_name }} {{ auth()->user()->last_name }}</span>
-                        </a>
-                        <ul class="dropdown-menu">
-
-                            {{--<!-- User image -->--}}
-                            <li class="user-header">
-                                <img src="{{ asset('dashboard_files/img/user2-160x160.jpg') }}" class="img-circle" alt="User Image">
-
-                                <p>
-                                    {{ auth()->user()->name }}
-                                    <small>Member since 2 days</small>
-                                </p>
-                            </li>
-
-                            {{--<!-- Menu Footer-->--}}
-                            <li class="user-footer">
-
-
-                                <a href="{{ route('logout') }}" class="btn btn-default btn-flat" onclick="event.preventDefault();
-                                                 document.getElementById('logout-form').submit();">@lang('site.logout')</a>
-
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                    @csrf
-                                </form>
-
-                            </li>
-                        </ul>
-                    </li>
                 </ul>
             </div>
         </nav>
@@ -153,17 +127,10 @@
 {{--    @yield('content')--}}
     <div class="content-wrapper">
 
-        <section class="content-header">
 
-            <h1>@lang('site.dashboard')</h1>
-
-            <ol class="breadcrumb">
-                <li class="active"><i class="fa fa-dashboard"></i> @lang('site.dashboard')</li>
-            </ol>
-        </section>
 
                 <section class="content">
-                    <router-view id="{!! Auth::user()->id !!}"></router-view>
+                    <router-view :permissions="{{ json_encode(Auth::user()) }}"></router-view>
                     <vue-progress-bar></vue-progress-bar>
                 </section>
 
@@ -174,11 +141,10 @@
 
     <footer class="main-footer">
         <div class="pull-right hidden-xs">
-            <b>Version</b> 2.4.0
+            <b>.3LI</b>
         </div>
-        <strong>Copyright &copy; 2014-2016
-            <a href="https://adminlte.io">Almsaeed Studio</a>.</strong> All rights
-        reserved.
+        <strong>جميع الحقوق محفوظه لديوان الزكاه محلية دنقلا &copy; 2021
+            </strong>
     </footer>
 
 </div><!-- end of wrapper -->
@@ -267,6 +233,10 @@
         CKEDITOR.config.language =  "{{ app()->getLocale() }}";
 
     });//end of ready
+
+    $('.sidebar .sidebar-menu.tree li').click(function () {
+        $(this).addClass("active").siblings("li").removeClass("active");
+    });
 
 </script>
 

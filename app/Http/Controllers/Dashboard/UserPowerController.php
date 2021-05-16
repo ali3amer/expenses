@@ -1,20 +1,24 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Dashboard;
 
-use App\Field;
+use App\Http\Controllers\Controller;
+use App\User_Power;
 use Illuminate\Http\Request;
 
-class FieldController extends Controller
+class UserPowerController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if ($request->user != '')
+        {
+            return User_Power::where('user_id', $request->user)->first()->town_id;
+        }
     }
 
     /**
@@ -41,10 +45,10 @@ class FieldController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Field  $field
+     * @param  \App\User_Power  $user_Power
      * @return \Illuminate\Http\Response
      */
-    public function show(Field $field)
+    public function show(User_Power $user_Power)
     {
         //
     }
@@ -52,10 +56,10 @@ class FieldController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Field  $field
+     * @param  \App\User_Power  $user_Power
      * @return \Illuminate\Http\Response
      */
-    public function edit(Field $field)
+    public function edit(User_Power $user_Power)
     {
         //
     }
@@ -64,10 +68,10 @@ class FieldController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Field  $field
+     * @param  \App\User_Power  $user_Power
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Field $field)
+    public function update(Request $request, User_Power $user_Power)
     {
         //
     }
@@ -75,10 +79,10 @@ class FieldController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Field  $field
+     * @param  \App\User_Power  $user_Power
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Field $field)
+    public function destroy(User_Power $user_Power)
     {
         //
     }

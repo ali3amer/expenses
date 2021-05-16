@@ -18,7 +18,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'password', 'state_id', 'power'
     ];
 
     /**
@@ -38,5 +38,10 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function user_power()
+    {
+        return $this->hasOne(User_Power::class);
+    }
 
 }

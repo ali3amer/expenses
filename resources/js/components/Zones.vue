@@ -32,7 +32,7 @@
                     <tr>
                         <th>الرقم</th>
                         <th>إسم المحليه</th>
-                        <th>الولايه</th>
+                        <th>الوحده الاداريه</th>
                         <th>التحكم</th>
                     </tr>
                     </thead>
@@ -154,7 +154,10 @@ export default {
                 this.$Progress.finish();
             })
                 .catch(() => {
-                    swal("Failed", "There Was Something Wrong.", "warning");
+                    toast.fire({
+                        icon: "error",
+                        title: "لم يتم التعديل"
+                    });
                 });
         },
         newModal() {
@@ -188,7 +191,10 @@ export default {
                         });
                         // Fire.$emit('afterCreate');
                     }).catch(() => {
-                        swal.fire("Failed", "There Was Something Wrong.", "warning");
+                        toast.fire({
+                            icon: "error",
+                            title: "لم يتم الحذف"
+                        });
                     });
 
                 }

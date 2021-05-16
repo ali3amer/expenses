@@ -1,17 +1,25 @@
 <template>
     <div>
 
-        <!--        <div v-if="!$gate.isAdminOrAuthor()">-->
-        <!--            <not-found></not-found>-->
-        <!--        </div>-->
         <div class="box box-primary">
             <div class="box-header">
-                <h3 class="box-title" style="display: inline-block">{{ title }}</h3>
-                <select v-model="state" @change="loadData">
-                    <option value="">إختر الولايه ........</option>
-                    <option v-for="(state, index) in states" :key="state.id" :value="state.id">{{ state.name }}</option>
-                </select>
-
+                <div class="row">
+                    <div class="col-md-1">
+                        <h3 class="box-title" style="margin-top: 10px">{{ title }}</h3>
+                    </div>
+                    <div class="col-md-3">
+                        <select v-model="table" @change="loadData" class="form-control">
+                            <option value="">إختر البند........</option>
+                            <option v-for="(table, index) in tables" :key="table.id" :value="table.id">{{
+                                    table.name
+                                }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" v-model="search" placeholder="بحث" @keyup="loadData" class="form-control">
+                    </div>
+                </div>
 
                 <div class="box-tools">
                     <button class="btn btn-primary" data-toggle="modal" @click="newModal()"
@@ -24,8 +32,8 @@
                     <thead>
                     <tr>
                         <th>الرقم</th>
-                        <th>إسم المحليه</th>
-                        <th>الولايه</th>
+                        <th>إسم الحقل</th>
+                        <th>البند</th>
                         <th>التحكم</th>
                     </tr>
                     </thead>
@@ -33,7 +41,7 @@
                     <tr v-for="(row, index) in rows.data" :key="row.id">
                         <td>{{ index + 1 }}</td>
                         <td>{{ row.name }}</td>
-                        <td>{{ row.state.name }}</td>
+                        <td>{{ row.table.name }}</td>
                         <td>
                             <a href="#" :data-target="'#' + modalTitle" @click="editModal(row)"><i
                                 class="fa fa-edit blue"></i></a> / <a href="#" @click="deleteData(row.id)"><i
@@ -68,22 +76,21 @@
                         </div>
                         <div class="modal-body">
                             <div class="form-group">
-                                <input v-model="form.name" type="text" name="name" placeholder="إسم المحليه"
+                                <input v-model="form.name" type="text" name="name" placeholder="إسم الولايه"
                                        class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
                                 <has-error :form="form" field="name"></has-error>
                             </div>
 
                             <div class="form-group">
-                                <select name="state_id" v-model="form.state_id" :class="{ 'is-invalid': form.errors.has('state_id') }"
-                                        class="form-control">
-                                    <option value="">إختر الولايه ........</option>
-                                    <option v-for="(state, index) in states" :key="state.id" :value="state.id">{{
-                                        state.name }}
+                                <select v-model="form.table_id" class="form-control"
+                                        :class="{ 'is-invalid': form.errors.has('table_id') }">
+                                    <option value="">إختر البند........</option>
+                                    <option v-for="(table, index) in tables" :key="table.id" :value="table.id">
+                                        {{ table.name }}
                                     </option>
                                 </select>
-                                <has-error :form="form" field="state_id"></has-error>
+                                <has-error :form="form" field="table_id"></has-error>
                             </div>
-
                         </div>
                         <div class="modal-footer">
                             <button type="submit" v-show="editMode" class="btn btn-success">تعديل</button>
@@ -104,31 +111,32 @@ export default {
     data() {
         return {
             editMode: false,
-            modalTitle: 'towns',
-            routeTitle: 'town',
-            title: 'المحليات',
-            subtitle: 'محليه',
+            modalTitle: 'fields',
+            routeTitle: 'field',
+            title: 'الحقول',
+            subtitle: 'حقل',
+            search: '',
+            table: '',
             rows: {},
-            states: {},
-            state: '',
+            tables: {},
             form: new Form({
                 id: '',
                 name: '',
-                state_id: ''
+                table_id: ''
             })
         }
     },
-    props:['id'],
+    props: ['id'],
     methods: {
         getResults(page = 1) {
-            axios.get('api/'+ this.routeTitle + '?page=' + page)
+            axios.get('api/' + this.routeTitle + '?page=' + page)
                 .then(response => {
                     this.rows = response.data;
                 });
         },
         updateData() {
             this.$Progress.start();
-            this.form.put('api/'+ this.routeTitle + '/' + this.form.id).then(() => {
+            this.form.put('api/' + this.routeTitle + '/' + this.form.id).then(() => {
                 // Fire.$emit('afterCreate');
 
                 $("#" + this.modalTitle).modal('hide');
@@ -188,10 +196,10 @@ export default {
             });
         },
         loadData() {
-            if (this.state == '') {
-                axios.get('api/' + this.routeTitle).then(({data}) => (this.rows = data));
+            if (this.table != '' || this.search != '') {
+                axios.get('api/' + this.routeTitle + '?table=' + this.table + '&search=' + this.search).then(({data}) => (this.rows = data));
             } else {
-                axios.get('api/' + this.routeTitle + '?state=' + this.state).then(({data}) => (this.rows = data));
+                axios.get('api/' + this.routeTitle).then(({data}) => (this.rows = data));
             }
         },
         createData() {
@@ -211,7 +219,7 @@ export default {
                 })
                 .catch(() => {
                     toast.fire({
-                        icon: "Failed",
+                        icon: "error",
                         title: "لم يتم الحفظ "
                     });
                 });
@@ -219,11 +227,10 @@ export default {
     },
     created() {
 
-        axios.get('api/state?state=all').then(({data}) => (this.states = data));
-
         this.loadData();
+        axios.get('api/table?select=all').then(({data}) => (this.tables = data));
+
 
     }
 }
 </script>
-

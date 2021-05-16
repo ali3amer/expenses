@@ -24,4 +24,13 @@ Route::resource('town', 'Dashboard\TownController');
 Route::resource('unit', 'Dashboard\UnitController');
 Route::resource('zone', 'Dashboard\ZoneController');
 Route::resource('client', 'Dashboard\ClientController');
+Route::resource('table', 'Dashboard\TableController');
+Route::resource('field', 'Dashboard\FieldController');
+Route::resource('supply', 'Dashboard\SupplyController');
+Route::resource('visit', 'Dashboard\VisitController');
+Route::resource('cash', 'Dashboard\CashController');
+Route::resource('crop', 'Dashboard\CropController');
+Route::resource('report', 'Dashboard\ReportController');
+Route::resource('program', 'Dashboard\ProgramController');
+Route::resource('user_Power', 'Dashboard\UserPowerController');
 
