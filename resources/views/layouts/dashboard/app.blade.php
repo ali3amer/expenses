@@ -65,6 +65,19 @@
             }
         }
 
+        @media print {
+            .main-header, .main-sidebar, .main-footer, .none-print {
+                display: none;
+            }
+
+            .box.box-primary, .box-body {
+                border-top-color: transparent;
+            }
+            table:not(".first") {
+                page-break-before: initial;
+            }
+        }
+
     </style>
     {{--<!-- jQuery 3 -->--}}
     <script src="{{ asset('dashboard_files/js/jquery.min.js') }}"></script>
@@ -86,7 +99,7 @@
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 
-<div class="wrapper" id="app">
+<div class="wrapper" id="app" style="position: relative">
 
     <header class="main-header">
 

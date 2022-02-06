@@ -58,7 +58,7 @@ class CropController extends Controller
         if ($request->program != '') {
             $program = $request->program;
         } else {
-            $program = '';
+            $program = null;
         }
         if ($request->editSupportMode == true) {
             Crop::where('program_id', $program)->where('zone_id', $request->zone_id)->delete();
@@ -66,7 +66,7 @@ class CropController extends Controller
 
         foreach ($request->clients as $client) {
             Crop::create([
-                'client_id' => $client['id'],
+                'client_id' => $program == null ? $client['id'] : $client ,
                 'field_id' => $request['field_id'],
                 'zone_id' => $request['zone_id'],
                 'crop_id' => $request['crop_id'],

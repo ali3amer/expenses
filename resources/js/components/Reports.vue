@@ -64,21 +64,21 @@
                         </select>
                     </div>
                     <div :class="form.supportType == 1 || form.supportType == '' ? 'col-md-3' : 'col-md-2'">
-                        <select name="" v-model="form.town" @change="getUnits" :disabled="form.state == '' || permissions.power != 'developer'"
+                        <select name="" v-model="form.town" @change="getUnits" :disabled="form.state == '' || permissions.power != 'developer' || form.reportType == 'state'"
                                 class="form-control">
                             <option value="">إختر المحليه ..........</option>
                             <option v-for="town in towns" :value="town.id">{{ town.name }}</option>
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <select name="" v-model="form.unit" @change="getZones" :disabled="form.town == ''"
+                        <select name="" v-model="form.unit" @change="getZones" :disabled="form.town == '' || form.reportType == 'state' || form.reportType == 'town'"
                                 class="form-control">
                             <option value="">إختر الوحده ..........</option>
                             <option v-for="unit in units" :value="unit.id">{{ unit.name }}</option>
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <select name="" v-model="form.zone" :disabled="form.unit == ''" class="form-control">
+                        <select name="" v-model="form.zone" :disabled="form.unit == '' || form.reportType != 'zone'" class="form-control">
                             <option value="">إختر المنطقه ..........</option>
                             <option v-for="zone in zones" :value="zone.id">{{ zone.name }}</option>
                         </select>

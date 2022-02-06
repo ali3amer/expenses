@@ -59,7 +59,7 @@ class CashController extends Controller
         if ($request->program != '') {
             $program = $request->program;
         } else {
-            $program = '';
+            $program = null;
         }
 
         if ($request->editSupportMode == true) {
@@ -67,7 +67,7 @@ class CashController extends Controller
         }
         foreach ($request->clients as $client) {
             $visit = Cash::create([
-                'client_id'  =>  $client,
+                'client_id'  =>  $program == null ? $client['id'] : $client,
                 'field_id' => $request['field_id'],
                 'zone_id' => $request['zone_id'],
                 'amount' => $request['quantity'],

@@ -18,7 +18,7 @@ class StateController extends Controller
     {
 
         if ($request->state == 'all') {
-            return State::all();
+            return State::all()->keyBy('id');
         } else {
             return State::paginate(10);
         }

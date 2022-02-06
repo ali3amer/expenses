@@ -54,6 +54,10 @@
                 <router-link to="/reports"><i class="fa fa-file-text"></i><span>التقارير</span></router-link>
             </li>
 
+                <li>
+                    <router-link to="/lists"><i class="fa fa-file-text"></i><span>بنشيتات الصرف</span></router-link>
+                </li>
+
 
         </ul>
 

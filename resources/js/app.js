@@ -56,6 +56,7 @@ const routes = [
     {path: '/fields', component: require('./components/Fields.vue').default},
     {path: '/supplies', component: require('./components/Supplies.vue').default},
     {path: '/reports', component: require('./components/Reports.vue').default},
+    {path: '/lists', component: require('./components/Lists.vue').default},
     {path: '/programs', component: require('./components/Programs.vue').default},
     {path: '/mangePrograms', component: require('./components/mangePrograms.vue').default},
 ];
